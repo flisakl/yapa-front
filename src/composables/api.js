@@ -15,7 +15,11 @@ export function useAPI() {
       for (let err of details) {
         const field = err.loc.at(-1)
         errors[field] ??= []
-        if ('ctx' in err) errors[field].push(err['ctx']['reason'])
+        if ('ctx' in err) {
+          const ctx = err['ctx']
+          if ('reason' in ctx) errors[field].push(ctx['reason'])
+          else if ('error' in ctx) errors[field].push(ctx['error'])
+        }
         else errors[field].push(err['msg'])
       }
 
@@ -28,14 +32,29 @@ export function useAPI() {
     fd.append("email", email);
     fd.append("password", password);
 
-    const response = await apiFetch("/api/users/login", {
+    const response = await apiFetch("/users/login", {
       method: "POST",
       body: fd,
     }).catch(error => handleError(error));
 
-    console.log(response);
     return response;
   }
 
-  return { login }
+  const register = async (fname, lname, email, pass1, pass2) => {
+    const fd = new FormData()
+    fd.append("first_name", fname);
+    fd.append("last_name", lname);
+    fd.append("email", email);
+    fd.append("password1", pass1);
+    fd.append("password2", pass2);
+
+    const response = await apiFetch("/users/", {
+      method: "POST",
+      body: fd,
+    }).catch(error => handleError(error));
+
+    return response;
+  }
+
+  return { login, register }
 }
