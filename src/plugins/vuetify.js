@@ -16,4 +16,10 @@ export default createVuetify({
   theme: {
     defaultTheme: 'light',
   },
+  defaults: {
+    VTextField: { variant: 'solo' },
+    VFileInput: { variant: 'solo' },
+    VTextarea: { variant: 'solo' },
+    VSelect: { variant: 'solo' },
+  }
 })
