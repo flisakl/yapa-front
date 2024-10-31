@@ -1,8 +1,15 @@
 import { ofetch } from "ofetch";
+import { ref } from 'vue';
 
 export function useAPI() {
-  const apiFetch = ofetch.create({ baseURL: '/api'});
-  // TODO: USE FETCHERROR to inspect error code
+  const apiFetch = ofetch.create({ baseURL: '/api', });
+
+  const user = ref({});
+  const setUser = (usr) => user.value = usr
+
+  const auth_header = () => {
+    return { 'Authorization': `Bearer ${user.value.token}` }
+  }
 
   const handleError = error => {
     /**
@@ -56,5 +63,21 @@ export function useAPI() {
     return response;
   }
 
-  return { login, register }
+  const uploadAvatar = async (avatar) => {
+    const fd = new FormData()
+    fd.append("avatar", avatar);
+
+    const response = await apiFetch("/users/avatar", {
+      method: "POST",
+      body: fd,
+      headers: auth_header()
+    }).catch(error => handleError(error));
+
+    return response;
+  }
+
+
+
+
+  return { login, register, uploadAvatar, setUser }
 }
